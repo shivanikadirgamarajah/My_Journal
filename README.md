@@ -1,16 +1,16 @@
-# app
+My_Journal
+My_Journal is a simple and secure journal app built with Flutter, designed to help users create, save, and protect their personal journal entries. It includes passcode protection and uses local storage for saving data, ensuring privacy and ease of access.
 
-A new Flutter project.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Features
+Create and edit journal entries with a clean, user-friendly interface.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Passcode screen to secure your journal from unauthorized access.
+
+Saves entries locally using SharedPreferences for offline access.
+
+Easy-to-navigate design optimized for Android devices.
+
