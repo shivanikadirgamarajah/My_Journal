@@ -172,19 +172,20 @@ class _PasscodeScreenState extends State<PasscodeScreen> {
                   const SizedBox(height: 8),
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 250),
-                    child: _errorText == null
-                        ? const SizedBox(height: 20)
-                        : Padding(
-                            key: ValueKey(_errorText),
-                            padding: const EdgeInsets.only(top: 2, left: 4),
-                            child: Text(
-                              _errorText!,
-                              style: const TextStyle(
-                                color: Colors.redAccent,
-                                fontSize: 13,
+                    child:
+                        _errorText == null
+                            ? const SizedBox(height: 20)
+                            : Padding(
+                              key: ValueKey(_errorText),
+                              padding: const EdgeInsets.only(top: 2, left: 4),
+                              child: Text(
+                                _errorText!,
+                                style: const TextStyle(
+                                  color: Colors.redAccent,
+                                  fontSize: 13,
+                                ),
                               ),
                             ),
-                          ),
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
@@ -299,9 +300,8 @@ class JournalHomePageState extends State<JournalHomePage> {
         'Dec',
       ];
       final month = months[date.month - 1];
-      final hour = date.hour > 12
-          ? date.hour - 12
-          : (date.hour == 0 ? 12 : date.hour);
+      final hour =
+          date.hour > 12 ? date.hour - 12 : (date.hour == 0 ? 12 : date.hour);
       final minute = date.minute.toString().padLeft(2, '0');
       final suffix = date.hour >= 12 ? 'PM' : 'AM';
       return '$month ${date.day}, ${date.year}  $hour:$minute $suffix';
@@ -312,10 +312,16 @@ class JournalHomePageState extends State<JournalHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final viewInsets = MediaQuery.viewInsetsOf(context);
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final keyboardVisible = viewInsets.bottom > 0;
+    final entriesPanelHeight = keyboardVisible ? 220.0 : screenHeight * 0.42;
+
     return GradientScaffold(
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + viewInsets.bottom),
           child: Column(
             children: [
               Container(
@@ -407,133 +413,141 @@ class JournalHomePageState extends State<JournalHomePage> {
                 ),
               ),
               const SizedBox(height: 10),
-              Expanded(
-                child: _savedEntries.isEmpty
-                    ? Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.88),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.nights_stay_outlined,
-                              size: 42,
-                              color: Color(0xFF527D77),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              'No entries yet.',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF2C4D49),
+              SizedBox(
+                height: entriesPanelHeight,
+                child:
+                    _savedEntries.isEmpty
+                        ? Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.88),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.nights_stay_outlined,
+                                size: 42,
+                                color: Color(0xFF527D77),
                               ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Start writing to build your journal timeline.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Color(0xFF486663)),
-                            ),
-                          ],
-                        ),
-                      )
-                    : ListView.builder(
-                        itemCount: _savedEntries.length,
-                        itemBuilder: (context, index) {
-                          final reverseIndex = _savedEntries.length - 1 - index;
-                          final rawEntry = _savedEntries[reverseIndex];
-                          final parsed = _splitEntry(rawEntry);
-                          final isExpanded = _expandedEntries.contains(
-                            reverseIndex,
-                          );
+                              SizedBox(height: 10),
+                              Text(
+                                'No entries yet.',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2C4D49),
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Start writing to build your journal timeline.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Color(0xFF486663)),
+                              ),
+                            ],
+                          ),
+                        )
+                        : ListView.builder(
+                          itemCount: _savedEntries.length,
+                          itemBuilder: (context, index) {
+                            final reverseIndex =
+                                _savedEntries.length - 1 - index;
+                            final rawEntry = _savedEntries[reverseIndex];
+                            final parsed = _splitEntry(rawEntry);
+                            final isExpanded = _expandedEntries.contains(
+                              reverseIndex,
+                            );
 
-                          return AnimatedContainer(
-                            duration: const Duration(milliseconds: 220),
-                            margin: const EdgeInsets.only(bottom: 12),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(18),
-                              gradient: const LinearGradient(
-                                colors: [Color(0xEAF9FFFD), Color(0xEBEBFAF7)],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Color(0x17004D43),
-                                  blurRadius: 16,
-                                  offset: Offset(0, 6),
-                                ),
-                              ],
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
+                            return AnimatedContainer(
+                              duration: const Duration(milliseconds: 220),
+                              margin: const EdgeInsets.only(bottom: 12),
+                              decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(18),
-                                onTap: () {
-                                  setState(() {
-                                    if (isExpanded) {
-                                      _expandedEntries.remove(reverseIndex);
-                                    } else {
-                                      _expandedEntries.add(reverseIndex);
-                                    }
-                                  });
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    14,
-                                    14,
-                                    10,
-                                    10,
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xEAF9FFFD),
+                                    Color(0xEBEBFAF7),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Color(0x17004D43),
+                                    blurRadius: 16,
+                                    offset: Offset(0, 6),
                                   ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        _formatTimestamp(parsed.timestamp),
-                                        style: const TextStyle(
-                                          color: Color(0xFF0D7E70),
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        parsed.body,
-                                        maxLines: isExpanded ? null : 3,
-                                        overflow: isExpanded
-                                            ? TextOverflow.visible
-                                            : TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          color: Color(0xFF2E4D49),
-                                          height: 1.35,
-                                        ),
-                                      ),
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: IconButton.filledTonal(
-                                          onPressed: () =>
-                                              _deleteEntry(reverseIndex),
-                                          icon: const Icon(
-                                            Icons.delete_outline_rounded,
+                                ],
+                              ),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(18),
+                                  onTap: () {
+                                    setState(() {
+                                      if (isExpanded) {
+                                        _expandedEntries.remove(reverseIndex);
+                                      } else {
+                                        _expandedEntries.add(reverseIndex);
+                                      }
+                                    });
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      14,
+                                      14,
+                                      10,
+                                      10,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          _formatTimestamp(parsed.timestamp),
+                                          style: const TextStyle(
+                                            color: Color(0xFF0D7E70),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13,
                                           ),
-                                          color: Colors.red.shade700,
                                         ),
-                                      ),
-                                    ],
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          parsed.body,
+                                          maxLines: isExpanded ? null : 3,
+                                          overflow:
+                                              isExpanded
+                                                  ? TextOverflow.visible
+                                                  : TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Color(0xFF2E4D49),
+                                            height: 1.35,
+                                          ),
+                                        ),
+                                        Align(
+                                          alignment: Alignment.centerRight,
+                                          child: IconButton.filledTonal(
+                                            onPressed:
+                                                () =>
+                                                    _deleteEntry(reverseIndex),
+                                            icon: const Icon(
+                                              Icons.delete_outline_rounded,
+                                            ),
+                                            color: Colors.red.shade700,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
+                            );
+                          },
+                        ),
               ),
             ],
           ),
