@@ -32,8 +32,8 @@ android {
         applicationId = "com.shivilo.journalapp"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = 21
-        versionName = "1.5"
+        versionCode = 23
+        versionName = "1.7"
     }
 
     signingConfigs {
